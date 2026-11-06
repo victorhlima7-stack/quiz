@@ -1,0 +1,619 @@
+<!DOCTYPE html>
+<html lang="pt-BR" class="dark">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Quiz de Compliance Ambiental e Licenciamento de Transporte</title>
+    <!-- Tailwind CSS -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    <!-- Google Fonts (Inter) -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
+    <!-- FontAwesome Icons -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+
+    <script>
+        tailwind.config = {
+            darkMode: 'class',
+            theme: {
+                extend: {
+                    fontFamily: {
+                        sans: ['Inter', 'sans-serif'],
+                    },
+                    colors: {
+                        eco: {
+                            50: '#f0fdf4',
+                            100: '#dcfce7',
+                            400: '#4ade80',
+                            500: '#22c55e',
+                            600: '#16a34a',
+                            700: '#15803d',
+                            800: '#166534',
+                            900: '#14532d',
+                            950: '#052e16',
+                        },
+                        petroleum: {
+                            500: '#0d9488',
+                            600: '#0d9488',
+                            700: '#0f766e',
+                            800: '#115e59',
+                            900: '#134e4a',
+                        }
+                    },
+                    animation: {
+                        'pulse-fast': 'pulse 1s cubic-bezier(0.4, 0, 0.6, 1) infinite',
+                        'shake': 'shake 0.4s ease-in-out',
+                        'fade-in': 'fadeIn 0.3s ease-out forwards',
+                    },
+                    keyframes: {
+                        shake: {
+                            '0%, 100%': { transform: 'translateX(0)' },
+                            '25%': { transform: 'translateX(-6px)' },
+                            '75%': { transform: 'translateX(6px)' },
+                        },
+                        fadeIn: {
+                            '0%': { opacity: '0', transform: 'translateY(10px)' },
+                            '100%': { opacity: '1', transform: 'translateY(0)' },
+                        }
+                    }
+                }
+            }
+        }
+    </script>
+    <style>
+        /* Custom scrollbars */
+        ::-webkit-scrollbar {
+            width: 8px;
+        }
+        ::-webkit-scrollbar-track {
+            background: #0f172a;
+        }
+        ::-webkit-scrollbar-thumb {
+            background: #334155;
+            border-radius: 4px;
+        }
+        ::-webkit-scrollbar-thumb:hover {
+            background: #475569;
+        }
+    </style>
+</head>
+<body class="bg-slate-950 text-slate-100 font-sans min-h-screen flex flex-col justify-between selection:bg-eco-500 selection:text-white">
+
+    <!-- Ambient background light effects -->
+    <div class="fixed inset-0 overflow-hidden pointer-events-none z-0">
+        <div class="absolute -top-40 -left-40 w-96 h-96 bg-eco-600/10 rounded-full blur-3xl"></div>
+        <div class="absolute top-1/2 -right-40 w-96 h-96 bg-teal-600/10 rounded-full blur-3xl"></div>
+        <div class="absolute -bottom-40 left-1/3 w-96 h-96 bg-emerald-700/10 rounded-full blur-3xl"></div>
+    </div>
+
+    <!-- MAIN WRAPPER -->
+    <div class="relative z-10 flex-grow flex flex-col justify-center items-center px-4 py-8 md:py-12">
+        <div class="w-full max-w-3xl">
+
+            <!-- HEADER / BRANDING -->
+            <header class="mb-6 text-center">
+                <div class="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-slate-900 border border-slate-800 text-eco-400 text-xs font-semibold uppercase tracking-wider mb-3">
+                    <i class="fa-solid fa-leaf"></i> Simulator & Compliance Platform
+                </div>
+                <h1 class="text-2xl md:text-4xl font-extrabold tracking-tight text-white mb-2">
+                    Quiz de Licenciamento & Descarte Ambiental
+                </h1>
+                <p class="text-slate-400 text-sm md:text-base max-w-xl mx-auto">
+                    Avalie seus conhecimentos em documentação fiscal-ambiental, transporte de resíduos perigosos e homologação de fornecedores.
+                </p>
+            </header>
+
+            <!-- QUIZ CONTAINER -->
+            <main id="quiz-app-container" class="bg-slate-900/90 border border-slate-800 rounded-2xl shadow-2xl backdrop-blur-xl p-5 md:p-8 transition-all duration-300">
+                
+                <!-- TOP BAR: PROGRESS & STATS -->
+                <div id="quiz-header" class="mb-6">
+                    <div class="flex justify-between items-center mb-2 text-xs md:text-sm font-medium">
+                        <span id="question-counter" class="text-slate-400 flex items-center gap-2">
+                            <i class="fa-solid fa-list-check text-eco-400"></i> Questão 1 de 5
+                        </span>
+                        <span id="current-score-pill" class="bg-slate-800 text-slate-300 border border-slate-700 px-3 py-1 rounded-full font-mono text-xs">
+                            Pontuação: 0
+                        </span>
+                    </div>
+
+                    <!-- Progress Bar -->
+                    <div class="w-full bg-slate-800 h-2.5 rounded-full overflow-hidden border border-slate-700/50">
+                        <div id="progress-bar" class="bg-gradient-to-r from-teal-500 to-eco-500 h-full w-0 transition-all duration-500 ease-out rounded-full"></div>
+                    </div>
+                </div>
+
+                <!-- QUESTION CARD CONTENT -->
+                <div id="question-card" class="animate-fade-in">
+                    <!-- Category Tag -->
+                    <div class="mb-3">
+                        <span id="category-badge" class="inline-block bg-slate-800/80 text-teal-400 border border-teal-500/30 text-xs font-semibold px-2.5 py-1 rounded-md uppercase tracking-wide">
+                            Legislação Ambiental
+                        </span>
+                    </div>
+
+                    <!-- Question Title -->
+                    <h2 id="question-text" class="text-lg md:text-xl font-bold text-slate-100 mb-6 leading-relaxed">
+                        Carregando pergunta...
+                    </h2>
+
+                    <!-- Options Grid (A, B, C, D) -->
+                    <div id="options-container" class="space-y-3">
+                        <!-- Options generated dynamically via JS -->
+                    </div>
+
+                    <!-- EXPLANATION FEEDBACK BOX (Hidden initially) -->
+                    <div id="explanation-box" class="hidden mt-6 p-4 rounded-xl border transition-all duration-300">
+                        <div class="flex items-start gap-3">
+                            <div id="explanation-icon" class="text-xl mt-0.5"></div>
+                            <div>
+                                <h4 id="explanation-title" class="font-bold text-sm md:text-base mb-1"></h4>
+                                <p id="explanation-text" class="text-xs md:text-sm text-slate-300 leading-relaxed"></p>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- ACTION BUTTON FOOTER -->
+                    <div class="mt-6 flex justify-end">
+                        <button id="next-btn" onclick="nextQuestion()" disabled class="bg-slate-800 text-slate-500 cursor-not-allowed font-semibold px-6 py-3 rounded-xl transition-all duration-200 flex items-center gap-2 text-sm shadow-md">
+                            <span>Próxima Questão</span>
+                            <i class="fa-solid fa-arrow-right"></i>
+                        </button>
+                    </div>
+                </div>
+
+                <!-- RESULTS SCREEN (Hidden initially) -->
+                <div id="results-card" class="hidden animate-fade-in text-center py-4">
+                    <div class="inline-flex items-center justify-center w-20 h-20 rounded-full bg-slate-800 border-2 border-eco-500/40 mb-4 shadow-lg">
+                        <i id="results-icon" class="fa-solid fa-award text-4xl text-eco-400"></i>
+                    </div>
+
+                    <h2 class="text-2xl md:text-3xl font-extrabold text-white mb-1">
+                        Resultado da Avaliação
+                    </h2>
+                    <p class="text-slate-400 text-sm mb-6">Diagnóstico de conformidade técnica e regulatória</p>
+
+                    <!-- Score Cards Grid -->
+                    <div class="grid grid-cols-1 sm:grid-cols-3 gap-4 mb-6 text-left">
+                        <div class="bg-slate-950/60 border border-slate-800 p-4 rounded-xl text-center">
+                            <span class="text-xs text-slate-400 uppercase font-semibold">Pontuação Final</span>
+                            <div id="final-score" class="text-3xl font-black text-white mt-1">0 / 0</div>
+                        </div>
+                        <div class="bg-slate-950/60 border border-slate-800 p-4 rounded-xl text-center">
+                            <span class="text-xs text-slate-400 uppercase font-semibold">Taxa de Acerto</span>
+                            <div id="final-percentage" class="text-3xl font-black text-eco-400 mt-1">0%</div>
+                        </div>
+                        <div class="bg-slate-950/60 border border-slate-800 p-4 rounded-xl text-center">
+                            <span class="text-xs text-slate-400 uppercase font-semibold">Status de Compliance</span>
+                            <div id="final-badge-text" class="text-sm font-bold text-teal-300 mt-2">Nível</div>
+                        </div>
+                    </div>
+
+                    <!-- Badge Banner -->
+                    <div id="badge-banner" class="p-4 rounded-xl border mb-6 text-left flex items-center gap-4 bg-slate-800/50 border-slate-700">
+                        <!-- Filled dynamically -->
+                    </div>
+
+                    <!-- Detailed Review Summary Accordion / List -->
+                    <div class="text-left mb-6">
+                        <h3 class="text-sm font-bold uppercase tracking-wider text-slate-400 mb-3 flex items-center gap-2">
+                            <i class="fa-solid fa-magnifying-glass"></i> Resumo Detalhado por Questão
+                        </h3>
+                        <div id="review-list" class="space-y-3 max-h-64 overflow-y-auto pr-1">
+                            <!-- Items added dynamically -->
+                        </div>
+                    </div>
+
+                    <!-- Action Buttons -->
+                    <div class="flex flex-col sm:flex-row gap-3 justify-center">
+                        <button onclick="restartQuiz()" class="bg-gradient-to-r from-eco-600 to-teal-600 hover:from-eco-500 hover:to-teal-500 text-white font-bold px-6 py-3 rounded-xl transition-all duration-200 flex items-center justify-center gap-2 shadow-lg shadow-eco-900/30">
+                            <i class="fa-solid fa-rotate-right"></i>
+                            <span>Refazer Quiz</span>
+                        </button>
+                        <button onclick="copySummary()" class="bg-slate-800 hover:bg-slate-700 text-slate-200 border border-slate-700 font-semibold px-6 py-3 rounded-xl transition-all duration-200 flex items-center justify-center gap-2">
+                            <i class="fa-solid fa-copy"></i>
+                            <span id="copy-btn-text">Copiar Resumo</span>
+                        </button>
+                    </div>
+                </div>
+
+            </main>
+
+            <!-- FOOTER INFO -->
+            <footer class="mt-6 text-center text-xs text-slate-500">
+                <p>Simulador Educacional de Gestão Fiscal & Ambiental &bull; SINIR / IBAMA / ANTT Compliant</p>
+            </footer>
+        </div>
+    </div>
+
+    <!-- AUDIO SYNTHESIS FX (NO EXTERNAL FILES REQUIRED) -->
+    <script>
+        // Simple Web Audio API Sound Effects
+        const AudioFX = {
+            ctx: null,
+            init() {
+                if (!this.ctx) {
+                    this.ctx = new (window.AudioContext || window.webkitAudioContext)();
+                }
+            },
+            playCorrect() {
+                try {
+                    this.init();
+                    const osc = this.ctx.createOscillator();
+                    const gain = this.ctx.createGain();
+                    osc.type = 'sine';
+                    osc.frequency.setValueAtTime(523.25, this.ctx.currentTime); // C5
+                    osc.frequency.exponentialRampToValueAtTime(659.25, this.ctx.currentTime + 0.15); // E5
+                    gain.gain.setValueAtTime(0.1, this.ctx.currentTime);
+                    gain.gain.exponentialRampToValueAtTime(0.01, this.ctx.currentTime + 0.25);
+                    osc.connect(gain);
+                    gain.connect(this.ctx.destination);
+                    osc.start();
+                    osc.stop(this.ctx.currentTime + 0.25);
+                } catch(e) {}
+            },
+            playIncorrect() {
+                try {
+                    this.init();
+                    const osc = this.ctx.createOscillator();
+                    const gain = this.ctx.createGain();
+                    osc.type = 'sawtooth';
+                    osc.frequency.setValueAtTime(220, this.ctx.currentTime); // A3
+                    osc.frequency.exponentialRampToValueAtTime(140, this.ctx.currentTime + 0.2);
+                    gain.gain.setValueAtTime(0.1, this.ctx.currentTime);
+                    gain.gain.exponentialRampToValueAtTime(0.01, this.ctx.currentTime + 0.25);
+                    osc.connect(gain);
+                    gain.connect(this.ctx.destination);
+                    osc.start();
+                    osc.stop(this.ctx.currentTime + 0.25);
+                } catch(e) {}
+            }
+        };
+    </script>
+
+    <!-- QUIZ LOGIC AND CONFIGURATION -->
+    <script>
+        /**
+         * =================================================================
+         * 📝 ARRAY DE PERGUNTAS DO QUIZ (FACILMENTE EDITÁVEL)
+         * =================================================================
+         * Instruções para personalizar:
+         * - Você pode adicionar ou alterar perguntas neste array `quizQuestions`.
+         * - Cada objeto deve possuir:
+         *     - category: Categoria/Assunto da pergunta
+         *     - question: Texto principal da questão
+         *     - options: Array com exatamente 4 opções de resposta [A, B, C, D]
+         *     - correct: Índice da opção correta (0 = A, 1 = B, 2 = C, 3 = D)
+         *     - explanation: Fundamentação legal/normativa detalhada
+         * =================================================================
+         */
+        const quizQuestions = [
+            {
+                category: "Documentação Nacional - SINIR",
+                question: "Qual a obrigatoriedade nacional do Manifesto de Transporte de Resíduos (MTR) segundo a Portaria MMA nº 280/2020?",
+                options: [
+                    "É emitido exclusivamente após a destinação final pelo receptor do resíduo.",
+                    "Deve ser gerado obrigatoriamente pelo GERADOR via Sistema SINIR antes do início do transporte dos resíduos.",
+                    "É um documento opcional utilizado apenas para isenção fiscal do ICMS estadual.",
+                    "Substitui integralmente a necessidade da emissão da Nota Fiscal de transporte."
+                ],
+                correct: 1, // Opção B
+                explanation: "O MTR é um documento declaratório nacional obrigatório emitido online pelo gerador através do sistema SINIR (ou sistemas estaduais integrados) antes do deslocamento dos resíduos pelo território nacional."
+            },
+            {
+                category: "Certificação e Rastreabilidade",
+                question: "Qual a função do Certificado de Destinação Final (CDF) e quem é legalmente responsável por sua emissão?",
+                options: [
+                    "É emitido pelo Gerador no momento da contratação da transportadora licenciada.",
+                    "É emitido pelo Motorista do veículo ao concluir a entrega física da carga.",
+                    "É emitido exclusivamente pelo DESTINADOR final após a conclusão do tratamento/disposição dos resíduos.",
+                    "É emitido pelo órgão ambiental municipal mediante pagamento da taxa de licenciamento."
+                ],
+                correct: 2, // Opção C
+                explanation: "O CDF é o documento formal que atesta a efetiva destinação final ambientalmente adequada dos resíduos, sendo emitido unicamente pelo destinatário final no sistema SINIR após o recebimento e tratamento do MTR."
+            },
+            {
+                category: "Licenciamento Ambiental Corporativo",
+                question: "Para que uma empresa de transporte ou descarte operante atue legalmente, qual licença autoriza o início e a continuidade de suas atividades vigentes?",
+                options: [
+                    "Licença Prévia (LP).",
+                    "Licença de Instalação (LI).",
+                    "Licença de Operação (LO).",
+                    "Alvará de Funcionamento Comercial Simplificado."
+                ],
+                correct: 2, // Opção C
+                explanation: "A Licença de Operação (LO) é a etapa final do licenciamento tripartite que autoriza o funcionamento da atividade ou empreendimento, após comprovar o cumprimento de todas as exigências das licenças anteriores (LP e LI)."
+            },
+            {
+                category: "Transporte Terrestre - ANTT",
+                question: "No transporte rodoviário de resíduos perigosos (ex: solventes, óleos usados), qual exigência regulatória da ANTT é indispensável no veículo?",
+                options: [
+                    "Apenas uso de lona simples cobrindo a carga sem qualquer simbologia externa.",
+                    "Sinalização com Painel de Segurança (Código de Risco/ONU), Rótulos de Risco e cadastro RNTRC ativo.",
+                    "Autorização verbal da Defesa Civil do município de origem.",
+                    "Dispensabilidade de identificação caso a viagem seja menor que 50 km."
+                ],
+                correct: 1, // Opção B
+                explanation: "O transporte de cargas/resíduos perigosos exige o cumprimento da Resolução ANTT nº 5.998/2022, necessitando de painéis de segurança (número ONU/risco), rótulos de risco adequados, conjunto de emergência e RNTRC regularizado."
+            },
+            {
+                category: "Cadastro Federal IBAMA",
+                question: "Qual o papel do Cadastro Técnico Federal (CTF/APP) do IBAMA para empresas transportadoras e destinadoras de resíduos?",
+                options: [
+                    "Registro obrigatório para atividades potencialmente poluidoras, exigindo renovação periódica do Certificado de Regularidade.",
+                    "Cadastro facultativo que serve apenas para captação de incentivos fiscais federais.",
+                    "Sistema exclusivo para pagamento de impostos municipais sobre prestação de serviços (ISS).",
+                    "Substituto do Licenciamento Ambiental Estadual junto aos órgãos de proteção (ex: CETESB, INEA)."
+                ],
+                correct: 0, // Opção A
+                explanation: "O CTF/APP da Lei Federal nº 6.938/1981 é obrigatório para pessoas físicas ou jurídicas que realizam atividades potencialmente poluidoras (como transporte e destinação de resíduos perigosos), sendo imprescindível a manutenção do Certificado de Regularidade ativo."
+            }
+        ];
+
+        // Global State Variables
+        let currentQuestionIndex = 0;
+        let score = 0;
+        let userAnswers = []; // Records { questionIndex, selectedOption, isCorrect }
+
+        // DOM Elements
+        const questionCounterEl = document.getElementById('question-counter');
+        const currentScorePillEl = document.getElementById('current-score-pill');
+        const progressBarEl = document.getElementById('progress-bar');
+        const categoryBadgeEl = document.getElementById('category-badge');
+        const questionTextEl = document.getElementById('question-text');
+        const optionsContainerEl = document.getElementById('options-container');
+        const explanationBoxEl = document.getElementById('explanation-box');
+        const explanationIconEl = document.getElementById('explanation-icon');
+        const explanationTitleEl = document.getElementById('explanation-title');
+        const explanationTextEl = document.getElementById('explanation-text');
+        const nextBtn = document.getElementById('next-btn');
+
+        const quizAppContainer = document.getElementById('quiz-app-container');
+        const questionCard = document.getElementById('question-card');
+        const resultsCard = document.getElementById('results-card');
+
+        // Letters helper for options
+        const optionLetters = ['A', 'B', 'C', 'D'];
+
+        // Initialize Quiz on load
+        window.addEventListener('DOMContentLoaded', () => {
+            initQuiz();
+        });
+
+        function initQuiz() {
+            currentQuestionIndex = 0;
+            score = 0;
+            userAnswers = [];
+            resultsCard.classList.add('hidden');
+            questionCard.classList.remove('hidden');
+            document.getElementById('quiz-header').classList.remove('hidden');
+            renderQuestion();
+        }
+
+        function renderQuestion() {
+            const currentQ = quizQuestions[currentQuestionIndex];
+            const totalQ = quizQuestions.length;
+
+            // Update Progress Header
+            questionCounterEl.innerHTML = `<i class="fa-solid fa-list-check text-eco-400"></i> Questão ${currentQuestionIndex + 1} de ${totalQ}`;
+            currentScorePillEl.innerText = `Pontuação: ${score}`;
+            const progressPercent = ((currentQuestionIndex) / totalQ) * 100;
+            progressBarEl.style.width = `${progressPercent}%`;
+
+            // Reset Explanation & Next Button
+            explanationBoxEl.classList.add('hidden');
+            explanationBoxEl.className = "hidden mt-6 p-4 rounded-xl border transition-all duration-300";
+            nextBtn.disabled = true;
+            nextBtn.className = "bg-slate-800 text-slate-500 cursor-not-allowed font-semibold px-6 py-3 rounded-xl transition-all duration-200 flex items-center gap-2 text-sm shadow-md";
+
+            // Update Question Details
+            categoryBadgeEl.innerText = currentQ.category;
+            questionTextEl.innerText = currentQ.question;
+
+            // Render Option Buttons
+            optionsContainerEl.innerHTML = '';
+            currentQ.options.forEach((optText, idx) => {
+                const btn = document.createElement('button');
+                btn.type = 'button';
+                btn.onclick = () => selectOption(idx);
+                btn.className = `option-btn w-full text-left p-4 rounded-xl border border-slate-800 bg-slate-950/50 hover:bg-slate-800/80 hover:border-slate-700 transition-all duration-200 flex items-start gap-3 group focus:outline-none focus:ring-2 focus:ring-eco-500/50`;
+                
+                btn.innerHTML = `
+                    <span class="option-letter font-mono font-bold text-xs bg-slate-800 text-slate-300 px-2.5 py-1 rounded-lg border border-slate-700 group-hover:border-eco-500/50 group-hover:text-eco-400 transition-colors">
+                        ${optionLetters[idx]}
+                    </span>
+                    <span class="option-text text-sm md:text-base text-slate-200 font-medium leading-normal pt-0.5 flex-grow">
+                        ${optText}
+                    </span>
+                    <span class="status-icon text-lg hidden"></span>
+                `;
+                optionsContainerEl.appendChild(btn);
+            });
+        }
+
+        function selectOption(selectedIndex) {
+            const currentQ = quizQuestions[currentQuestionIndex];
+            const isCorrect = (selectedIndex === currentQ.correct);
+            const allOptionBtns = optionsContainerEl.querySelectorAll('.option-btn');
+
+            // Disable further selection on options
+            allOptionBtns.forEach((btn, idx) => {
+                btn.disabled = true;
+                btn.classList.remove('hover:bg-slate-800/80', 'hover:border-slate-700', 'group');
+                btn.classList.add('cursor-default');
+
+                const statusIcon = btn.querySelector('.status-icon');
+                statusIcon.classList.remove('hidden');
+
+                if (idx === currentQ.correct) {
+                    // Correct Option Styling
+                    btn.classList.remove('bg-slate-950/50', 'border-slate-800');
+                    btn.classList.add('bg-eco-950/40', 'border-eco-500', 'text-eco-200');
+                    statusIcon.innerHTML = `<i class="fa-solid fa-circle-check text-eco-400"></i>`;
+                } else if (idx === selectedIndex && !isCorrect) {
+                    // Incorrect Option Selected
+                    btn.classList.remove('bg-slate-950/50', 'border-slate-800');
+                    btn.classList.add('bg-rose-950/40', 'border-rose-500', 'text-rose-200', 'animate-shake');
+                    statusIcon.innerHTML = `<i class="fa-solid fa-circle-xmark text-rose-400"></i>`;
+                } else {
+                    // Dim unselected options
+                    btn.classList.add('opacity-50');
+                }
+            });
+
+            // Update Score & Audio
+            if (isCorrect) {
+                score++;
+                AudioFX.playCorrect();
+            } else {
+                AudioFX.playIncorrect();
+            }
+
+            // Save user answer
+            userAnswers.push({
+                questionIndex: currentQuestionIndex,
+                selectedOption: selectedIndex,
+                isCorrect: isCorrect
+            });
+
+            // Show Explanation Box
+            explanationBoxEl.classList.remove('hidden');
+            if (isCorrect) {
+                explanationBoxEl.classList.add('bg-eco-950/40', 'border-eco-500/40', 'text-eco-200');
+                explanationIconEl.innerHTML = `<i class="fa-solid fa-circle-check text-eco-400"></i>`;
+                explanationTitleEl.innerText = "Resposta Correta!";
+                explanationTitleEl.className = "font-bold text-sm md:text-base mb-1 text-eco-400";
+            } else {
+                explanationBoxEl.classList.add('bg-rose-950/40', 'border-rose-500/40', 'text-rose-200');
+                explanationIconEl.innerHTML = `<i class="fa-solid fa-triangle-exclamation text-rose-400"></i>`;
+                explanationTitleEl.innerText = "Resposta Incorreta";
+                explanationTitleEl.className = "font-bold text-sm md:text-base mb-1 text-rose-400";
+            }
+            explanationTextEl.innerText = currentQ.explanation;
+
+            // Enable Next Button
+            nextBtn.disabled = false;
+            nextBtn.className = "bg-gradient-to-r from-teal-600 to-eco-600 hover:from-teal-500 hover:to-eco-500 text-white font-bold px-6 py-3 rounded-xl transition-all duration-200 flex items-center gap-2 text-sm shadow-lg shadow-eco-900/40 cursor-pointer";
+            
+            if (currentQuestionIndex === quizQuestions.length - 1) {
+                nextBtn.querySelector('span').innerText = "Ver Resultado Final";
+            }
+        }
+
+        function nextQuestion() {
+            if (currentQuestionIndex < quizQuestions.length - 1) {
+                currentQuestionIndex++;
+                renderQuestion();
+            } else {
+                showResults();
+            }
+        }
+
+        function showResults() {
+            questionCard.classList.add('hidden');
+            document.getElementById('quiz-header').classList.add('hidden');
+            resultsCard.classList.remove('hidden');
+
+            const total = quizQuestions.length;
+            const percentage = Math.round((score / total) * 100);
+
+            document.getElementById('final-score').innerText = `${score} / ${total}`;
+            document.getElementById('final-percentage').innerText = `${percentage}%`;
+
+            // Tier Evaluation & Badges
+            let badgeTitle = "";
+            let badgeClass = "";
+            let badgeDesc = "";
+            let iconClass = "";
+
+            if (percentage === 100) {
+                badgeTitle = "Especialista em Compliance Ambiental";
+                badgeClass = "bg-eco-500/10 border-eco-500/40 text-eco-400";
+                badgeDesc = "Excelente! Domínio completo das regulamentações de MTR, licenciamento, ANTT e obrigações do IBAMA.";
+                iconClass = "fa-solid fa-award text-eco-400";
+            } else if (percentage >= 60) {
+                badgeTitle = "Analista de Adequação Regulatória";
+                badgeClass = "bg-teal-500/10 border-teal-500/40 text-teal-300";
+                badgeDesc = "Bom desempenho! Conhecimento consistente sobre os fluxos ambientais, necessitando de ajustes pontuais.";
+                iconClass = "fa-solid fa-shield-halved text-teal-400";
+            } else {
+                badgeTitle = "Requer Adequação Urgente";
+                badgeClass = "bg-rose-500/10 border-rose-500/40 text-rose-400";
+                badgeDesc = "Atenção necessária. Alto risco de não conformidade fiscal e ambiental nas operações de transporte e descarte.";
+                iconClass = "fa-solid fa-triangle-exclamation text-rose-400";
+            }
+
+            document.getElementById('final-badge-text').innerText = badgeTitle;
+            document.getElementById('results-icon').className = `${iconClass} text-4xl`;
+
+            const badgeBanner = document.getElementById('badge-banner');
+            badgeBanner.className = `p-4 rounded-xl border mb-6 text-left flex items-start gap-3 ${badgeClass}`;
+            badgeBanner.innerHTML = `
+                <div class="text-xl mt-0.5"><i class="${iconClass}"></i></div>
+                <div>
+                    <h4 class="font-bold text-sm md:text-base">${badgeTitle}</h4>
+                    <p class="text-xs md:text-sm opacity-90 mt-0.5 leading-relaxed">${badgeDesc}</p>
+                </div>
+            `;
+
+            // Detailed Review List
+            const reviewList = document.getElementById('review-list');
+            reviewList.innerHTML = '';
+
+            userAnswers.forEach((ans, idx) => {
+                const q = quizQuestions[ans.questionIndex];
+                const isCorrect = ans.isCorrect;
+                
+                const item = document.createElement('div');
+                item.className = `p-3 rounded-lg border text-xs md:text-sm ${
+                    isCorrect ? 'bg-slate-900/80 border-slate-800' : 'bg-slate-900/80 border-rose-900/40'
+                }`;
+
+                item.innerHTML = `
+                    <div class="flex items-start justify-between gap-2 mb-1">
+                        <span class="font-bold text-slate-300">Questão ${idx + 1}: ${q.category}</span>
+                        <span class="${isCorrect ? 'text-eco-400' : 'text-rose-400'} font-semibold flex items-center gap-1">
+                            <i class="fa-solid ${isCorrect ? 'fa-check' : 'fa-xmark'}"></i>
+                            ${isCorrect ? 'Correta' : 'Incorreta'}
+                        </span>
+                    </div>
+                    <p class="text-slate-400 text-xs mb-1.5">${q.question}</p>
+                    <div class="text-xs ${isCorrect ? 'text-eco-300' : 'text-slate-300'} font-medium">
+                        Sua resposta: ${q.options[ans.selectedOption]}
+                    </div>
+                    ${!isCorrect ? `<div class="text-xs text-eco-400 font-medium mt-0.5">Correta: ${q.options[q.correct]}</div>` : ''}
+                `;
+                reviewList.appendChild(item);
+            });
+        }
+
+        function restartQuiz() {
+            initQuiz();
+        }
+
+        function copySummary() {
+            const percentage = Math.round((score / quizQuestions.length) * 100);
+            const summaryText = ` Diagnóstico de Compliance Ambiental:\nPontuação: ${score}/${quizQuestions.length} (${percentage}%)\nStatus: ${document.getElementById('final-badge-text').innerText}\nRealizado no Quiz de Licenciamento & Descarte Ambiental.`;
+            
+            // Clipboard copy with fallback
+            if (navigator.clipboard && navigator.clipboard.writeText) {
+                navigator.clipboard.writeText(summaryText);
+            } else {
+                const textArea = document.createElement("textarea");
+                textArea.value = summaryText;
+                document.body.appendChild(textArea);
+                textArea.select();
+                document.execCommand('copy');
+                document.body.removeChild(textArea);
+            }
+
+            const copyBtnText = document.getElementById('copy-btn-text');
+            copyBtnText.innerText = "Copiado!";
+            setTimeout(() => {
+                copyBtnText.innerText = "Copiar Resumo";
+            }, 2000);
+        }
+    </script>
+</body>
+</html>
